@@ -1,0 +1,78 @@
+Requirements:
+=============
+
+  * CMake version 2.6 or newer (http://www.cmake.org)
+  * A C++ compiler
+  * GNU Make
+
+
+Compilation (with UNIX Makefiles):
+==================================
+
+  1. Create a 'build' directory in the package source directory.
+
+    $ cd block-graph
+    $ mkdir build
+    $ cd build
+
+  2. Configure the package for your system. By default
+     CMAKE_BUILD_TYPE is set to "Release"
+
+    $ cmake ../
+
+    To build with debugging symbols type
+
+    $ cmake -DCMAKE_BUILD_TYPE="Debug" ../
+
+  3. Compile the package.
+
+    $ make
+
+  4. To run the binaries navigate to the bin directory
+
+    $ cd bin
+    $ ./build <input> <truncated-depth>
+
+    ...
+
+    $ ./extract <block-graph> <extract-file>
+
+
+<extract-file> description:
+======================
+
+Note that you can use the binary bin/generate-extract-file to randomly
+generate these files.
+
+The <extract-file> contains a list of fixed sized offsets into the
+text to be used by the extract binary when performing timing runs.
+
+To make evaluation a little easier the format of the extract file is
+identical to LZ-end's extract file. See lz77index/tests/extract.cpp:64
+for the actual implementation.
+
+The first line contains a header in the following format.
+
+# number=n length=m file=s
+
+Where
+
+n is the number of i,j pairs in the file
+
+m is the length of each i,j pair in the tile
+
+and
+
+s is the name of the text to extract i,j text from.
+
+Each ij pair is delimited by a comma.
+
+The following is an example of a well formed <extract-file> that can be
+processed by both our block-graph and LZ-end extract binary.
+
+# number=5 length=128 file=/input/text/repetitive-corpus/Escherichia_Coli
+0,127
+41086803,41086930
+4691372,4691499
+19905751,19905878
+111043,111170
