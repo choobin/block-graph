@@ -1,0 +1,25 @@
+block-graph, a succinct implementation of a block-graph data structure described in
+
+@inproceedings{
+author = {
+Travis Gagie and
+Pawel Gawrychowski and
+Simon J. Puglisi
+},
+title     = {Faster Approximate Pattern Matching in Compressed Repetitive Texts},
+booktitle = {Proc. 22nd International Symposium on Algorithms and Computation (ISAAC'11)},
+year      = {2011},
+}
+
+@inproceedings {
+author = {
+Travis Gagie and
+Pawel Gawrychowski and
+Juha Karkkainen and
+Yakov Nekrich and
+Simon J. Puglisi
+},
+title     = {A Faster Grammar-Based Self-Index},
+booktitle = {Proc. 6th International Conference on Language and Automata Theory and Applications (LATA'12)},
+year      = {2012},
+}
