@@ -4,19 +4,19 @@
 #include <assert.h>
 
 #include "bit-vector.h"
-#include "rank9b.h"
+#include "rank-vigna.h"
 
 class Rank
 {
 public:
     Rank(BitVector* _bv) :
         bv(_bv),
-        pimpl(new rank9b(bv->data, bv->nbits)) {
+        pimpl(new RankVigna(bv->data, bv->nbits)) {
     }
 
     Rank(FILE *fp) :
         bv(new BitVector(fp)),
-        pimpl(new rank9b(bv->data, bv->nbits)) {
+        pimpl(new RankVigna(bv->data, bv->nbits)) {
     }
 
     ~Rank() {
@@ -50,7 +50,7 @@ private:
     Rank& operator=(const Rank&);
 
     BitVector *bv;
-    rank9b *pimpl;
+    RankVigna *pimpl;
 };
 
 #endif /* RANK_H */

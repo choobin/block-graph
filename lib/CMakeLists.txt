@@ -5,7 +5,7 @@ set(sources
   divsufsort.cpp
   extract.cpp
   graph.cpp
-  rank9b.cpp
+  rank-vigna.cpp
   rmq-succinct.cpp
   text.cpp
   utility.cpp
