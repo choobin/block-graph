@@ -3,6 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#ifdef _OPENMP
+# include <omp.h>
+#endif
 
 #include "graph.h"
 #include "stopwatch.h"
@@ -36,6 +39,7 @@ int main(int argc, char **argv)
 
     Stopwatch stopwatch("Testing extract(i)");
 
+    #pragma omp parallel for
     for (size_t k = 0; k < n; k++) {
         uint8_t c = graph.extract(k);
         check(c == text[k],
@@ -53,6 +57,7 @@ int main(int argc, char **argv)
 
     graph.extract(result, 0, n - 1);
 
+    #pragma omp parallel for
     for (size_t k = 0; k < n; k++) {
         check(result[k] == text[k],
               "Error: result[%zu] (%c) != text[%zu + %zu] (%c)\n",

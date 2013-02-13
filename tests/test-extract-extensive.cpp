@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef _OPENMP
+# include <omp.h>
+#endif
 
 #include "graph.h"
 #include "utility.h"
@@ -11,6 +14,7 @@ test_extract_i(Graph& graph, const uint8_t *text, size_t n)
     printf("\n%s -- ", __func__);
     fflush(stdout);
 
+    #pragma omp parallel for schedule(dynamic, 128)
     for (size_t i = 0; i < n; i++) {
         uint8_t c = graph.extract(i);
         check(c == text[i],
@@ -22,13 +26,14 @@ test_extract_i(Graph& graph, const uint8_t *text, size_t n)
 }
 
 static void
-test_prefixes(Graph& graph, const uint8_t *text, size_t n, uint8_t *result)
+test_prefixes(Graph& graph, const uint8_t *text, size_t n)
 {
     printf("* %s -- ", __func__);
     fflush(stdout);
 
+    #pragma omp parallel for schedule(dynamic, 128)
     for (size_t i = 0; i < n; i++) {
-        graph.extract(result, 0, i);
+        uint8_t *result = graph.extract(0, i);
 
         check(memcmp(result, text, i) == 0,
               "result != text[%d..%zu]",
@@ -37,30 +42,35 @@ test_prefixes(Graph& graph, const uint8_t *text, size_t n, uint8_t *result)
         check(result[i + 1] == 0,
               "Error: \\0 missing at result[%zu]",
               i + 1);
+
+        delete[] result;
     }
 
     printf("passed\n");
 }
 
 static void
-test_suffixes(Graph& graph, const uint8_t *text, size_t n, uint8_t *result)
+test_suffixes(Graph& graph, const uint8_t *text, size_t n)
 {
     printf("* %s -- ", __func__);
     fflush(stdout);
 
+    #pragma omp parallel for schedule(dynamic, 128)
     for (size_t i = n - 1; i > 0; i--) {
-        graph.extract(result, i, n - 1);
+        uint8_t *result = graph.extract(i, n - 1);
 
-        check(memcmp(result, text + i,n - i) == 0,
+        check(memcmp(result, text + i, n - i) == 0,
               "result != text[%zu..%zu]",
               i, n - 1);
 
         check(result[n - i] == 0,
               "Error: \\0 missing at result[%zu]",
               n - i);
+
+        delete[] result;
     }
 
-    graph.extract(result, 0, n - 1);
+    uint8_t *result = graph.extract(0, n - 1);
 
     check(memcmp(result, text, n - 1) == 0,
           "result != text[%d..%zu]",
@@ -70,24 +80,24 @@ test_suffixes(Graph& graph, const uint8_t *text, size_t n, uint8_t *result)
           "Error: \\0 missing at result[%zu]",
           n);
 
+
+    delete[] result;
+
     printf("passed\n");
 }
 
 static void
-test_ngrams(Graph& graph, const uint8_t *text, size_t n, uint8_t *result)
+test_ngrams(Graph& graph, const uint8_t *text, size_t n)
 {
     printf("* %s -- ", __func__);
     fflush(stdout);
 
-    for (size_t ngram_size = 2;
-         ngram_size < n;
-         ngram_size++) {
+    #pragma omp parallel for schedule(dynamic, 128)
+    for (size_t ngram_size = 2; ngram_size < n; ngram_size++) {
 
-        for (size_t i = 0;
-             i < n - ngram_size + 1;
-             i++) {
+        for (size_t i = 0; i < n - ngram_size + 1; i++) {
 
-            graph.extract(result, i, i + (ngram_size - 1));
+            uint8_t *result = graph.extract(i, i + (ngram_size - 1));
 
             check(memcmp(result, text + i, ngram_size) == 0,
                   "result: %s != text[%zu..%zu]",
@@ -96,6 +106,8 @@ test_ngrams(Graph& graph, const uint8_t *text, size_t n, uint8_t *result)
             check(result[ngram_size] == 0,
                   "Error: \\0 missing at result[%zu]",
                   ngram_size);
+
+            delete[] result;
         }
     }
 
@@ -107,15 +119,11 @@ test_extract_ij(Graph& graph, const uint8_t *text, size_t n)
 {
     printf("\n%s ((this could take a while))\n", __func__);
 
-    uint8_t *result = new uint8_t[n + 1];
+    test_prefixes(graph, text, n);
 
-    test_prefixes(graph, text, n, result);
+    test_suffixes(graph, text, n);
 
-    test_suffixes(graph, text, n, result);
-
-    test_ngrams(graph, text, n, result);
-
-    delete[] result;
+    test_ngrams(graph, text, n);
 }
 
 int main(int argc, char **argv)
