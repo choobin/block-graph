@@ -23,7 +23,6 @@ endif()
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   set(CMAKE_BUILD_TYPE "Debug")
   set(CMAKE_VERBOSE_MAKEFILE ON)
-  add_subdirectory(tests)
 else()
   set(CMAKE_BUILD_TYPE "Release")
 
@@ -49,3 +48,5 @@ endif()
 add_subdirectory(lib)
 
 add_subdirectory(src)
+
+add_subdirectory(tests)
