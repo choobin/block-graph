@@ -55,10 +55,10 @@ static size_t find(const vector<Block>& level, size_t index, size_t length)
 {
     size_t lhs = 0;
     size_t rhs = level.size() - 1;
-    size_t mid = lhs + ((rhs - lhs) >> 1);
+    size_t mid;
 
     while (lhs <= rhs) {
-        mid = (lhs + rhs) / 2;
+        mid = lhs + ((rhs - lhs) >> 1);
 
         if (index >= level[mid].lhs &&
             index + length - 1 <= level[mid].rhs)
